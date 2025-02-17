@@ -1,0 +1,32 @@
+{
+  "type": "record",
+  "name": "PctJob",
+  "namespace": "gunb0s.common.message",
+  "fields": [
+    {
+      "name": "taskId",
+      "type": "long"
+    },
+    {
+      "name": "jobId",
+      "type": "long"
+    },
+    {
+      "name": "executionContext",
+      "type": {
+        "type": "record",
+        "name": "ExecutionContext",
+        "fields": [
+          {
+            "name": "retryCount",
+            "type": "int"
+          },
+          {
+            "name": "executionTime",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

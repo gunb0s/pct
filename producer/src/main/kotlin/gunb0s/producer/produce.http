@@ -1,0 +1,7 @@
+### Post Produce
+POST http://localhost:8080
+Content-Type: application/json
+
+### Alter Partition
+POST http://localhost:8080/alter-partition-count
+Content-Type: application/json
