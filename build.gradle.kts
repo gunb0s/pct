@@ -30,6 +30,7 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.springframework.kafka:spring-kafka")
+        implementation("io.confluent.parallelconsumer:parallel-consumer-core:0.5.3.2")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
         testImplementation("org.springframework.kafka:spring-kafka-test")

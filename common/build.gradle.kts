@@ -5,4 +5,5 @@ plugins {
 dependencies {
     implementation("io.confluent:kafka-avro-serializer:7.8.0")
     api("org.apache.avro:avro:1.12.0")
+
 }

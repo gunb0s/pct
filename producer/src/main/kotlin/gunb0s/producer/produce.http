@@ -2,6 +2,15 @@
 POST http://localhost:8080
 Content-Type: application/json
 
+{
+  "partitionName": "parallel-pctJob"
+}
+
 ### Alter Partition
 POST http://localhost:8080/alter-partition-count
 Content-Type: application/json
+
+{
+  "count": 3,
+  "partitionName": "parallel-pctJob"
+}
