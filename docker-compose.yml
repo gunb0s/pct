@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: docker/deploy/Dockerfile-producer
     environment:
+      OTEL_SERVICE_NAME: "pct-producer"
       OTEL_TRACES_EXPORTER: "none"
       OTEL_METRICS_EXPORTER: "none"
       OTEL_LOGS_EXPORTER: "otlp"

@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component
 class MessageProducer(
     private val template: KafkaTemplate<String, PctJob>
 ) {
-    val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun produce(topic: String, key: String, message: PctJob) {
         val result = template.send(topic, key, message)
 
+        logger.info("Sending message to topic: $topic")
         result.whenComplete { result, ex ->
             if (ex == null) {
                 val recordMetadata =
@@ -26,6 +27,8 @@ class MessageProducer(
             } else {
                 logger.error("Failed to send message due to : ${ex.message}")
             }
-        }
+        }.join()
+
+        logger.info("Message sent successfully to topic: $topic")
     }
 }
