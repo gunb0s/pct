@@ -1,4 +1,10 @@
 services:
+  pct-producer:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile-producer
+    ports:
+      - "8080:8080"
   postgres:
     image: postgres:16.6
     environment:

@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
@@ -50,7 +52,10 @@ allprojects {
 }
 
 
+tasks.withType<BootJar> {
+    enabled = false
+}
 
-
-
-
+tasks.withType<Jar> {
+    enabled = false
+}

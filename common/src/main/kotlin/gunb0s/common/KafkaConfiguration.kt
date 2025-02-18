@@ -11,7 +11,7 @@ class KafkaConfiguration {
     fun adminClient(): AdminClient {
         return AdminClient.create(
             mapOf(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092"
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to "broker-1:9092"
             )
         )
     }
