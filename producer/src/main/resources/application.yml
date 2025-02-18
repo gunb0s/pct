@@ -1,7 +1,6 @@
 spring:
   application:
     name: producer
-
   kafka:
     producer:
       bootstrap-servers: broker-1:29092

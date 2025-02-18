@@ -1,0 +1,15 @@
+receivers:
+  otlp:
+    protocols:
+      grpc: { }
+      http: { }   # HTTP 프로토콜 추가
+
+exporters:
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+
+service:
+  pipelines:
+    logs:
+      receivers: [ otlp ]
+      exporters: [ loki ]

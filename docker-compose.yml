@@ -2,9 +2,46 @@ services:
   pct-producer:
     build:
       context: .
-      dockerfile: deploy/Dockerfile-producer
+      dockerfile: docker/deploy/Dockerfile-producer
+    environment:
+      OTEL_TRACES_EXPORTER: "none"
+      OTEL_METRICS_EXPORTER: "none"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://collector:4318"
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
+      - collector
+
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.91.0
+    command:
+      - --config=/etc/otelcol-contrib/otel-collector.yml
+    volumes:
+      - ./docker/collector/otel-collector.yml:/etc/otelcol-contrib/otel-collector.yml
+    ports:
+      - "4317" # OTLP gRPC receiver
+      - "4318" # OTLP HTTP receiver
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    volumes:
+      - ./docker/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+
   postgres:
     image: postgres:16.6
     environment:
@@ -37,48 +74,6 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
-
-  #  broker-2:
-  #    image: confluentinc/cp-kafka:7.7.1
-  #    hostname: broker-2
-  #    ports:
-  #      - "9093:9092"
-  #    environment:
-  #      KAFKA_NODE_ID: 2
-  #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-  #      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker-2:29092,PLAINTEXT_HOST://localhost:9092'
-  #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-  #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-  #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-  #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-  #      KAFKA_PROCESS_ROLES: 'broker,controller'
-  #      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker-1:29093, 2@broker-2:29093, 3@broker-3:29093'
-  #      KAFKA_LISTENERS: 'PLAINTEXT://broker-2:29092,CONTROLLER://broker-2:29093,PLAINTEXT_HOST://0.0.0.0:9092'
-  #      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-  #      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-  #      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-  #      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
-  #
-  #  broker-3:
-  #    image: confluentinc/cp-kafka:7.7.1
-  #    hostname: broker-3
-  #    ports:
-  #      - "9094:9092"
-  #    environment:
-  #      KAFKA_NODE_ID: 3
-  #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-  #      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker-3:29092,PLAINTEXT_HOST://localhost:9092'
-  #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-  #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-  #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-  #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-  #      KAFKA_PROCESS_ROLES: 'broker,controller'
-  #      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker-1:29093, 2@broker-2:29093, 3@broker-3:29093'
-  #      KAFKA_LISTENERS: 'PLAINTEXT://broker-3:29092,CONTROLLER://broker-3:29093,PLAINTEXT_HOST://0.0.0.0:9092'
-  #      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-  #      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-  #      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-  #      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.7.1
