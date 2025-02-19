@@ -1,0 +1,25 @@
+otelcol.receiver.otlp "pct" {
+  grpc {}
+
+  http {}
+
+  output {
+    logs = [otelcol.processor.batch.pct.input]
+  }
+}
+
+otelcol.processor.batch "pct" {
+  output {
+    logs = [otelcol.exporter.loki.pct.input]
+  }
+}
+
+otelcol.exporter.loki "pct" {
+  forward_to = [loki.write.pct.receiver]
+}
+
+loki.write "pct" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

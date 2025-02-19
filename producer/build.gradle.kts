@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("io.opentelemetry:opentelemetry-api:1.47.0")
 }
 
 tasks.register<Copy>("copyAgent") {

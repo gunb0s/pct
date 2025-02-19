@@ -16,14 +16,13 @@ services:
       - collector
 
   collector:
-    image: otel/opentelemetry-collector-contrib:0.91.0
-    command:
-      - --config=/etc/otelcol-contrib/otel-collector.yml
+    image: grafana/alloy:v1.6.1
     volumes:
-      - ./docker/collector/otel-collector.yml:/etc/otelcol-contrib/otel-collector.yml
+      - ./docker/collector/config.alloy:/etc/alloy/config.alloy
     ports:
-      - "4317" # OTLP gRPC receiver
+      - "12345:12345" # OTLP gRPC receiver
       - "4318" # OTLP HTTP receiver
+      - "4317"
     depends_on:
       - loki
 
