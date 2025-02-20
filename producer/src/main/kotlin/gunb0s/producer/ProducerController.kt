@@ -1,47 +1,47 @@
 package gunb0s.producer
 
-import gunb0s.common.message.ExecutionContext
-import gunb0s.common.message.PctJob
-import io.opentelemetry.api.GlobalOpenTelemetry
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter.ISO_DATE_TIME
-import kotlin.random.Random
 
 @RestController()
 class ProducerController(
-    private val messageProducer: MessageProducer,
+    private val producerService: ProducerService
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @GetMapping
     fun helloWorld(): String {
-        logger.info("Hello, World!")
+        try {
+            logger.info("Hello, World!")
 
-        return "Hello, World!"
+            producerService.execute(
+                mapOf(
+                    "key" to "value"
+                )
+            )
+
+            return "Hello, World!"
+        } catch (e: Exception) {
+            logger.error("Failed to say hello world")
+            return "Not Hello world"
+        }
     }
 
     data class ProduceDto(
-        val partitionName: String,
+        val uuid: String,
     )
 
     @PostMapping
     fun produce(@RequestBody body: ProduceDto) {
-//        messageProducer.produce(
-//            body.partitionName,
-//            LocalDateTime.now().toString(), PctJob(
-//                Random.nextLong(),
-//                Random.nextLong(),
-//                ExecutionContext(
-//                    0,
-//                    LocalDateTime.now().format(ISO_DATE_TIME),
-//                )
-//            )
-//        )
+        return try {
+            producerService.produce(body.uuid)
+        } catch (e: Exception) {
+            logger.error("Failed to produce message", e)
+            throw e
+        }
     }
 
 //    data class AlterPartitionDto(

@@ -1,0 +1,8 @@
+FROM openjdk:21-jdk-slim
+LABEL authors="gunbos"
+
+ADD consumer/build/libs/pct-consumer.jar /app.jar
+ADD consumer/build/agent/opentelemetry-javaagent.jar /opentelemetry-javaagent.jar
+
+ENTRYPOINT java -javaagent:/opentelemetry-javaagent.jar \
+      -jar /app.jar
