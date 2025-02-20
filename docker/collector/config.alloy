@@ -1,3 +1,7 @@
+livedebugging {
+  enabled = true
+}
+
 otelcol.receiver.otlp "pct" {
   grpc {}
 
@@ -15,7 +19,25 @@ otelcol.processor.batch "pct" {
 }
 
 otelcol.exporter.loki "pct" {
+  forward_to = [loki.process.pct.receiver]
+}
+
+loki.process "pct" {
   forward_to = [loki.write.pct.receiver]
+
+  stage.regex {
+    expression = "jobId=(?P<jobId>[0-9]+)"
+  }
+
+  stage.labels {
+    values = { "jobId" = "jobId" }
+  }
+
+  stage.structured_metadata {
+    values = {
+      jobId = "",
+    }
+  }
 }
 
 loki.write "pct" {

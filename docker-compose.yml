@@ -17,6 +17,10 @@ services:
 
   collector:
     image: grafana/alloy:v1.6.1
+    command:
+      - "run"
+      - "--server.http.listen-addr=0.0.0.0:12345"
+      - "/etc/alloy/config.alloy"
     volumes:
       - ./docker/collector/config.alloy:/etc/alloy/config.alloy
     ports:
@@ -29,6 +33,8 @@ services:
   loki:
     image: grafana/loki:latest
     command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./docker/loki/loki-config.yml:/etc/loki/local-config.yaml
     ports:
       - "3100"
 
