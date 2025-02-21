@@ -1,6 +1,11 @@
 ### Get
 GET http://localhost:8080
 
+### Get Log
+http://localhost:8082/logs?query=
+
+
+
 ### Post Produce
 POST http://localhost:8080
 Content-Type: application/json

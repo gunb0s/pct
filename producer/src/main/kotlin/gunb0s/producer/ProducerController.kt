@@ -1,38 +1,16 @@
 package gunb0s.producer
 
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController()
 class ProducerController(
     private val producerService: ProducerService
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
-
-    @GetMapping
-    fun helloWorld(): String {
-        try {
-            logger.info("Hello, World!")
-
-            producerService.execute(
-                mapOf(
-                    "key" to "value"
-                )
-            )
-
-            return "Hello, World!"
-        } catch (e: Exception) {
-            logger.error("Failed to say hello world")
-            return "Not Hello world"
-        }
-    }
-
-    data class ProduceDto(
-        val uuid: String,
-    )
 
     @PostMapping
     fun produce(@RequestBody body: ProduceDto) {
@@ -41,6 +19,36 @@ class ProducerController(
         } catch (e: Exception) {
             logger.error("Failed to produce message", e)
             throw e
+        }
+    }
+
+    @GetMapping("/logs")
+    fun getLogs(@ModelAttribute queryDto: LogQueryDto) {
+        val client = OkHttpClient()
+        val url = HttpUrl.Builder()
+            .scheme("http")
+            .host("loki")
+            .port(3100)
+            .addPathSegment("loki/api/v1/query_range")
+            .addQueryParameter("query", queryDto.query)
+            .addQueryParameter("start", queryDto.start.toString())
+            .build()
+            .toString()
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val body = response.body?.string()
+                logger.info("Logs: $body")
+            } else {
+                logger.error("Failed to get logs ${response.message}")
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to get logs ${e.message}")
         }
     }
 
