@@ -4,14 +4,14 @@ spring:
 
   kafka:
     consumer:
-      bootstrap-servers: broker-1:29092
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER_HOST}:29092
       group-id: pct-consumer-v1.0.0
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
-        schema.registry.url: http://schema-registry:8081
+        schema.registry.url: ${KAFKA_SCHEMAREGISTRY_URL_HOST}:8081
         specific.avro.reader: true
-      enable-auto-commit: off
+#      enable-auto-commit: off
 
   datasource:
     driver-class-name: org.postgresql.Driver

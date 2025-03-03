@@ -3,11 +3,11 @@ spring:
     name: producer
   kafka:
     producer:
-      bootstrap-servers: broker-1:29092
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER_HOST}:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       properties:
-        schema.registry.url: http://schema-registry:8081
+        schema.registry.url: ${KAFKA_SCHEMAREGISTRY_URL_HOST}:8081
         specific.avro.reader: true
 
   datasource:
